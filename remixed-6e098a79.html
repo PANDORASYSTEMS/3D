@@ -1,0 +1,1038 @@
+        .login-form {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .comment-rating {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .comment-images {
+            display: flex;
+            gap: 1rem;
+        }<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Life Studio - Tu vida en 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Línea de escaneo animada */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #00ffff 50%, transparent 100%);
+            z-index: 1000;
+            animation: scanMove 4s infinite ease-in-out;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+        }
+
+        @keyframes scanMove {
+            0%, 100% { transform: translateY(0) scaleX(0.5); opacity: 0.8; }
+            50% { transform: translateY(100vh) scaleX(1); opacity: 1; }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Contenido Principal */
+        main {
+            margin-top: 80px;
+        }
+
+        .page-section {
+            min-height: 100vh;
+            padding: 2rem;
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: calc(100vh - 80px);
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px #00ffff); }
+            to { filter: drop-shadow(0 0 30px #ff00ff); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+            padding: 0 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffff;
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Paquetes */
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .package-card {
+            background: linear-gradient(145deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            padding: 2rem;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .package-card:hover::before {
+            left: 100%;
+        }
+
+        .package-card:hover {
+            border-color: #00ffff;
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .package-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #00ffff;
+        }
+
+        .package-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff00ff;
+            margin-bottom: 1rem;
+        }
+
+        .package-features {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .package-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .package-features li::before {
+            content: '✓';
+            color: #00ffff;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Galería de Proceso y Resultados */
+        .gallery-section {
+            margin: 4rem 0;
+            padding: 0 2rem;
+        }
+
+        .gallery-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .gallery-tab {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: white;
+        }
+
+        .gallery-tab.active, .gallery-tab:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border-color: #00ffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .gallery-container {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .gallery-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-grid.active {
+            display: grid;
+        }
+
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .placeholder-image {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 255, 255, 0.1));
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #00ffff;
+            font-size: 1rem;
+            border: 2px dashed rgba(0, 255, 255, 0.3);
+        }
+
+        .placeholder-image span {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Sección de Comentarios */
+        .comments-section {
+            margin: 4rem 0;
+            padding: 0 2rem;
+        }
+
+        .login-prompt {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-input {
+            padding: 0.8rem 1rem;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .login-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+        }
+
+        .login-button {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .register-link {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .comments-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .comment-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #00ffff;
+        }
+
+        .comment-date {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .verified-client {
+            background: #10b981;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .comment-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .comment-image-placeholder {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(0, 255, 255, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive para galería y comentarios */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .comment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animaciones de entrada */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .contact-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+
+        .contact-item::before {
+            content: attr(data-icon);
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Línea de escaneo -->
+    <div class="scan-line"></div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">3D Life Studio</div>
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab active" data-page="inicio">Inicio</a>
+                <a href="#" class="nav-tab" data-page="momentos">Momentos Especiales</a>
+                <a href="#" class="nav-tab" data-page="personal">Personal</a>
+                <a href="#" class="nav-tab" data-page="comic">Comic/Sci-Fi</a>
+                <a href="#" class="nav-tab" data-page="corporativo">Corporativo</a>
+                <a href="#" class="nav-tab" data-page="contacto">Contacto</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Página de Inicio -->
+        <section id="inicio" class="page-section active">
+            <div class="hero">
+                <h1 class="fade-in">Tu Vida en 3D</h1>
+                <p class="fade-in">Transformamos tus momentos más especiales en figuras 3D únicas e irrepetibles. Tecnología de vanguardia y arte personalizado.</p>
+                <a href="#" class="cta-button fade-in" data-page="momentos">Descubre Nuestros Paquetes</a>
+            </div>
+
+            <div class="features">
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">🔬</span>
+                    <h3>Tecnología de Precisión</h3>
+                    <p>Escáner Creality CR-Scan Raptor con precisión de 0.02mm para capturas perfectas de cada detalle.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">🎨</span>
+                    <h3>Arte Personalizado</h3>
+                    <p>Cada figura es pintada a mano por nuestros artistas especializados, creando piezas únicas.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Impresión 6K</h3>
+                    <p>Impresora Anycubic Photon Mono M7 Pro con resolución 6K para detalles extraordinarios.</p>
+                </div>
+            </div>
+
+            <!-- Galería de Proceso y Resultados -->
+            <section class="gallery-section">
+                <h2 style="text-align: center; font-size: 3rem; margin: 4rem 0 2rem 0; color: #00ffff;">📸 Proceso y Resultados</h2>
+                
+                <div class="gallery-tabs">
+                    <button class="gallery-tab active" data-gallery="proceso">🔬 Proceso en Taller</button>
+                    <button class="gallery-tab" data-gallery="resultados">✨ Resultados Finales</button>
+                    <button class="gallery-tab" data-gallery="entrega">🎁 Entrega al Cliente</button>
+                </div>
+
+                <div class="gallery-container">
+                    <div class="gallery-grid active" id="proceso">
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>📷</span>
+                                <p>Sesión de Escaneo</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🖥️</span>
+                                <p>Modelado 3D</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🖨️</span>
+                                <p>Impresión 3D</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🎨</span>
+                                <p>Pintado Artístico</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-grid" id="resultados">
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>💍</span>
+                                <p>Figura de Boda</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>👸</span>
+                                <p>XV Años</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🎓</span>
+                                <p>Graduación</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🦸‍♂️</span>
+                                <p>Superhéroe</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-grid" id="entrega">
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>😊</span>
+                                <p>Cliente Satisfecho</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>📦</span>
+                                <p>Empaque Premium</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>🏆</span>
+                                <p>Momento de Entrega</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="placeholder-image">
+                                <span>❤️</span>
+                                <p>Reacción Especial</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Comentarios -->
+            <section class="comments-section">
+                <h2 style="text-align: center; font-size: 3rem; margin: 4rem 0 2rem 0; color: #00ffff;">💬 Experiencias de Nuestros Clientes</h2>
+                
+                <div class="login-prompt">
+                    <div class="login-card">
+                        <h3>🔐 Inicia Sesión para Comentar</h3>
+                        <p>Solo los clientes que han adquirido una figura pueden dejar comentarios</p>
+                        <div class="login-form">
+                            <input type="email" placeholder="Email" class="login-input">
+                            <input type="password" placeholder="Contraseña" class="login-input">
+                            <button class="login-button">Iniciar Sesión</button>
+                        </div>
+                        <p class="register-link">¿No tienes cuenta? <a href="#" style="color: #00ffff;">Regístrate aquí</a></p>
+                    </div>
+                </div>
+
+                <div class="comments-container">
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">María González</span>
+                            <span class="comment-date">15 de Agosto, 2025</span>
+                            <span class="verified-client">✓ Cliente Verificado</span>
+                        </div>
+                        <div class="comment-rating">⭐⭐⭐⭐⭐</div>
+                        <p class="comment-text">"Increíble experiencia! La figura de mi boda quedó perfecta, cada detalle está capturado maravillosamente. El equipo es muy profesional y el resultado superó mis expectativas."</p>
+                        <div class="comment-images">
+                            <div class="comment-image-placeholder">📸 Foto del resultado</div>
+                        </div>
+                    </div>
+
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">Carlos Mendoza</span>
+                            <span class="comment-date">10 de Agosto, 2025</span>
+                            <span class="verified-client">✓ Cliente Verificado</span>
+                        </div>
+                        <div class="comment-rating">⭐⭐⭐⭐⭐</div>
+                        <p class="comment-text">"Mi hija se emocionó mucho con su figura de XV años. La calidad es excepcional y el acabado artístico es impresionante. Totalmente recomendado."</p>
+                    </div>
+
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">Ana Rodríguez</span>
+                            <span class="comment-date">5 de Agosto, 2025</span>
+                            <span class="verified-client">✓ Cliente Verificado</span>
+                        </div>
+                        <div class="comment-rating">⭐⭐⭐⭐⭐</div>
+                        <p class="comment-text">"Excelente servicio desde el escaneo hasta la entrega. La figura de graduación de mi hijo quedó idéntica y con detalles increíbles. Vale cada peso."</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Momentos Especiales -->
+        <section id="momentos" class="page-section">
+            <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem; color: #00ffff;">💒 Momentos Especiales</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.8;">Inmortalizamos los momentos más importantes de tu vida</p>
+            
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3 class="package-title">💍 Paquete Boda</h3>
+                    <div class="package-price">$12,500</div>
+                    <ul class="package-features">
+                        <li>Escaneo de la pareja</li>
+                        <li>2 figuras de 20cm pintadas</li>
+                        <li>Base romántica personalizada</li>
+                        <li>Álbum digital del proceso</li>
+                        <li>Empaque premium</li>
+                        <li>Entrega: 15-20 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">👸 Paquete XV Años</h3>
+                    <div class="package-price">$8,500</div>
+                    <ul class="package-features">
+                        <li>Escaneo de la quinceañera</li>
+                        <li>Figura de 25cm con vestido de gala</li>
+                        <li>Base temática personalizada</li>
+                        <li>Empaque premium con luces</li>
+                        <li>Certificado de autenticidad</li>
+                        <li>Entrega: 20-25 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🎓 Paquete Graduación</h3>
+                    <div class="package-price">$6,500</div>
+                    <ul class="package-features">
+                        <li>Escaneo del graduado</li>
+                        <li>Figura de 20cm con toga</li>
+                        <li>Diploma miniatura incluido</li>
+                        <li>Base universidad personalizada</li>
+                        <li>Placa conmemorativa</li>
+                        <li>Entrega: 15-20 días</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Personal -->
+        <section id="personal" class="page-section">
+            <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem; color: #00ffff;">🧑‍🎨 Figuras Personales</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.8;">Tu personalidad capturada en 3D</p>
+            
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3 class="package-title">🥉 Básico 15cm</h3>
+                    <div class="package-price">$2,800</div>
+                    <ul class="package-features">
+                        <li>Escaneo completo de la persona</li>
+                        <li>Figura impresa sin pintar</li>
+                        <li>Acabado profesional</li>
+                        <li>Entrega: 5-7 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🥈 Estándar 15cm</h3>
+                    <div class="package-price">$4,200</div>
+                    <ul class="package-features">
+                        <li>Escaneo de alta precisión</li>
+                        <li>Figura pintada profesionalmente</li>
+                        <li>Base básica incluida</li>
+                        <li>Entrega: 10-12 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🥇 Premium 20cm</h3>
+                    <div class="package-price">$6,200</div>
+                    <ul class="package-features">
+                        <li>Escaneo ultra-detallado</li>
+                        <li>Pintado artístico avanzado</li>
+                        <li>Base personalizada</li>
+                        <li>Empaque de presentación</li>
+                        <li>Entrega: 12-15 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">👨‍👩‍👧‍👦 Familia Completa</h3>
+                    <div class="package-price">$13,500</div>
+                    <ul class="package-features">
+                        <li>4 personas incluidas</li>
+                        <li>Figuras de 15cm pintadas</li>
+                        <li>Base familiar conjunta</li>
+                        <li>25% de descuento aplicado</li>
+                        <li>Empaque especial</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comic/Sci-Fi -->
+        <section id="comic" class="page-section">
+            <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem; color: #00ffff;">🦸‍♂️ Comic & Sci-Fi</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.8;">Conviértete en tu héroe favorito</p>
+            
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3 class="package-title">🦸‍♂️ Superhéroe Clásico</h3>
+                    <div class="package-price">$7,500</div>
+                    <ul class="package-features">
+                        <li>Escaneo de cabeza y cara</li>
+                        <li>Cuerpo Superman/Batman/Spider-Man</li>
+                        <li>Figura de 20cm pintada</li>
+                        <li>Logo personalizable</li>
+                        <li>Entrega: 18-22 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🚀 Personaje Sci-Fi</h3>
+                    <div class="package-price">$8,200</div>
+                    <ul class="package-features">
+                        <li>Tu rostro en Star Wars/Trek</li>
+                        <li>Incluye accesorios temáticos</li>
+                        <li>Figura de 20cm ultra-detallada</li>
+                        <li>Base ambientada</li>
+                        <li>Entrega: 20-25 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🎌 Estilo Anime/Manga</h3>
+                    <div class="package-price">$7,800</div>
+                    <ul class="package-features">
+                        <li>Adaptación estilo anime</li>
+                        <li>Figura de 18cm estilo manga</li>
+                        <li>Colores vibrantes especiales</li>
+                        <li>Expresión personalizable</li>
+                        <li>Entrega: 18-22 días</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Corporativo -->
+        <section id="corporativo" class="page-section">
+            <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem; color: #00ffff;">🏢 Corporativo</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.8;">Reconocimientos únicos para tu equipo</p>
+            
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3 class="package-title">💼 Ejecutivo Premium</h3>
+                    <div class="package-price">$5,500</div>
+                    <ul class="package-features">
+                        <li>Figura de 18cm en traje ejecutivo</li>
+                        <li>Base corporativa elegante</li>
+                        <li>Empaque empresarial</li>
+                        <li>Placa personalizable</li>
+                        <li>Entrega: 12-15 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">🏆 Empleado del Año</h3>
+                    <div class="package-price">$4,800</div>
+                    <ul class="package-features">
+                        <li>Figura de 15cm profesional</li>
+                        <li>Placa de reconocimiento</li>
+                        <li>Base corporativa</li>
+                        <li>Certificado incluido</li>
+                        <li>Entrega: 10-12 días</li>
+                    </ul>
+                </div>
+
+                <div class="package-card">
+                    <h3 class="package-title">👥 Equipo Directivo</h3>
+                    <div class="package-price">$4,200 c/u</div>
+                    <ul class="package-features">
+                        <li>5+ personas (20% descuento)</li>
+                        <li>Figuras uniformes</li>
+                        <li>Base conjunta disponible</li>
+                        <li>Empaque corporativo</li>
+                        <li>Entrega coordinada</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto -->
+        <section id="contacto" class="page-section">
+            <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem; color: #00ffff;">📞 Contáctanos</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="contact-info">
+                    <h3 style="color: #ff00ff; margin-bottom: 1rem;">Estado de México</h3>
+                    <div class="contact-item" data-icon="📍">Ubicación: [Dirección pendiente de confirmar]</div>
+                    <div class="contact-item" data-icon="📱">WhatsApp: [Número pendiente]</div>
+                    <div class="contact-item" data-icon="📧">Email: info@3dlifestudio.com</div>
+                    <div class="contact-item" data-icon="🕒">Horarios: Lun-Sáb 10:00-19:00</div>
+                </div>
+
+                <div class="contact-info">
+                    <h3 style="color: #ff00ff; margin-bottom: 1rem;">Mérida, Yucatán</h3>
+                    <div class="contact-item" data-icon="📍">Ubicación: [Dirección pendiente de confirmar]</div>
+                    <div class="contact-item" data-icon="📱">WhatsApp: [Número pendiente]</div>
+                    <div class="contact-item" data-icon="📧">Email: merida@3dlifestudio.com</div>
+                    <div class="contact-item" data-icon="🕒">Horarios: Lun-Sáb 9:00-18:00</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <h3 style="color: #00ffff; margin-bottom: 1rem;">Síguenos en Redes Sociales</h3>
+                <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                    <div class="contact-item" data-icon="📘" style="margin: 0;">Facebook: [Pendiente]</div>
+                    <div class="contact-item" data-icon="📷" style="margin: 0;">Instagram: [Pendiente]</div>
+                    <div class="contact-item" data-icon="🎵" style="margin: 0;">TikTok: [Pendiente]</div>
+                    <div class="contact-item" data-icon="🎬" style="margin: 0;">YouTube: [Pendiente]</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: rgba(0, 255, 255, 0.1); border-radius: 15px;">
+                <h3 style="color: #ff00ff;">¿Listo para inmortalizarte en 3D?</h3>
+                <p style="margin: 1rem 0;">Agenda tu sesión de escaneo y vive la experiencia más innovadora</p>
+                <a href="#" class="cta-button">Agenda Ahora</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navegación de la galería
+        document.querySelectorAll('.gallery-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover active de todos los tabs
+                document.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.gallery-grid').forEach(g => g.classList.remove('active'));
+                
+                // Activar tab y grid correspondiente
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.gallery).classList.add('active');
+            });
+        });
+
+        // Navegación entre pestañas
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remover clase active de todos los tabs
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+                
+                // Activar tab y sección correspondiente
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.page).classList.add('active');
+            });
+        });
+
+        // CTA buttons navigation
+        document.querySelectorAll('.cta-button').forEach(button => {
+            if (button.dataset.page) {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+                    
+                    document.querySelector(`[data-page="${button.dataset.page}"]`).classList.add('active');
+                    document.getElementById(button.dataset.page).classList.add('active');
+                });
+            }
+        });
+
+        // Animaciones de entrada cuando se hace scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = Math.random() * 0.3 + 's';
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observar elementos para animación
+        document.querySelectorAll('.feature-card, .package-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Efecto de paralaje en la línea de escaneo basado en scroll
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const scanLine = document.querySelector('.scan-line');
+            
+            if (currentScrollY > lastScrollY) {
+                // Scrolling down
+                scanLine.style.animationDuration = '3s';
+            } else {
+                // Scrolling up
+                scanLine.style.animationDuration = '5s';
+            }
+            
+            lastScrollY = currentScrollY;
+        });
+    </script>
+</body>
+</html>
